@@ -26,4 +26,16 @@ export class PostDatabase extends BaseDatabase {
       throw new Error(error.sqlMessage || error.message);
     }
   }
+
+  public async getPostsByUserId(userId: string) {
+    try {
+      const response = await this.getConnection()
+        .select()
+        .from(PostDatabase.POST_TABLE_NAME)
+        .where({ user_id: userId });
+      return response.map((item) => Post.toPostDTO(item));
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
 }

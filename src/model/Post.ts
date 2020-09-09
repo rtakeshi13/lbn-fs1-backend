@@ -1,3 +1,5 @@
+import { DateFormatter } from "../services/DateFormatter";
+
 export class Post {
   constructor(
     private id: string,
@@ -56,6 +58,18 @@ export class Post {
       post.media_url
     );
   }
+
+  static toPostDTO(post: any): PostDTO {
+    return {
+      postId: post.id,
+      userId: post.user_id,
+      mediaUrl: post.media_url,
+      caption: post.caption,
+      createdAt: new DateFormatter().mySqlDatetimeToMilliseconds(
+        post.created_at
+      ),
+    };
+  }
 }
 
 export interface PostInputDTO {
@@ -63,4 +77,12 @@ export interface PostInputDTO {
   mediaUrl: string;
   tags: string[];
   collectionsIds: string[];
+}
+
+export interface PostDTO {
+  postId: string;
+  userId: string;
+  mediaUrl: string;
+  caption: string;
+  createdAt: number;
 }

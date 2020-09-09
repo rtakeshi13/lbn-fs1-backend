@@ -29,4 +29,20 @@ export class PostController {
 
     await BaseDatabase.destroyConnection();
   }
+  async getPostsByUserId(req: Request, res: Response) {
+    try {
+      const postBusiness = new PostBusiness(
+        new Authenticator(),
+        new IdGenerator(),
+        new PostDatabase()
+      );
+      const posts = await postBusiness.getPostsByUserId(req.params.userId);
+
+      res.status(200).send({ posts });
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
+
+    await BaseDatabase.destroyConnection();
+  }
 }
