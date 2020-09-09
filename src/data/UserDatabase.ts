@@ -52,17 +52,17 @@ export class UserDatabase extends BaseDatabase {
         "u.name",
         "u.nickname",
         knex
-          .count()
+          .count("id")
           .from(UserDatabase.POST_TABLE_NAME)
           .where("user_id", knex.ref("u.id"))
           .as("postsCount"),
         knex
-          .count()
+          .count("follow_id")
           .from(UserDatabase.RELATION_TABLE_NAME)
           .where("follow_id", knex.ref("u.id"))
           .as("followersCount"),
         knex
-          .count()
+          .count("user_id")
           .from(UserDatabase.RELATION_TABLE_NAME)
           .where("user_id", knex.ref("u.id"))
           .as("followingCount")
