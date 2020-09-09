@@ -33,4 +33,18 @@ export class UserController {
 
     await BaseDatabase.destroyConnection();
   }
+  async getUserInfoByNickname(req: Request, res: Response) {
+    try {
+      const userBusiness = new UserBusiness();
+
+      const userInfo = await userBusiness.getUserInfoByNickname(
+        req.params.nickname as string
+      );
+      res.status(200).send({ userInfo });
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
+
+    await BaseDatabase.destroyConnection();
+  }
 }

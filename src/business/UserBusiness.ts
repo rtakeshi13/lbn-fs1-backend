@@ -49,4 +49,10 @@ export class UserBusiness {
 
     return accessToken;
   }
+
+  public async getUserInfoByNickname(nickname: string): Promise<any> {
+    const userDatabase = new UserDatabase();
+    const userInfo = await userDatabase.getUserInfoByNickname(nickname);
+    return userInfo;
+  }
 }
