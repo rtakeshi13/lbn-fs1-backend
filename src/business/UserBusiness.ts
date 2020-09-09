@@ -1,44 +1,39 @@
-import { UserInputDTO, LoginInputDTO } from "../model/User";
+import { SignupInputDTO, LoginInputDTO } from "../model/User";
 import { UserDatabase } from "../data/UserDatabase";
 import { IdGenerator } from "../services/IdGenerator";
 import { HashManager } from "../services/HashManager";
 import { Authenticator } from "../services/Authenticator";
 
 export class UserBusiness {
-  async createUser(user: UserInputDTO) {
-    const idGenerator = new IdGenerator();
-    const id = idGenerator.generate();
-    const hashManager = new HashManager();
-    const hashPassword = await hashManager.hash(user.password);
+  constructor(
+    private authenticator: Authenticator,
+    private hashManager: HashManager,
+    private idGenerator: IdGenerator,
+    private userDatabase: UserDatabase
+  ) {}
+  async createUser(signupData: SignupInputDTO) {
+    const id = this.idGenerator.generate();
+    const hashPassword = await this.hashManager.hash(signupData.password);
 
-    const userDatabase = new UserDatabase();
-    await userDatabase.createUser(
+    await this.userDatabase.createUser(id, hashPassword, signupData);
+
+    const accessToken = this.authenticator.generateToken({
       id,
-      user.email,
-      user.name,
-      user.nickname,
-      hashPassword,
-      user.role
-    );
-
-    const authenticator = new Authenticator();
-    const accessToken = authenticator.generateToken({ id, role: user.role });
+      role: signupData.role,
+    });
 
     return accessToken;
   }
 
-  async getUserByEmail(user: LoginInputDTO) {
-    const userDatabase = new UserDatabase();
-    const userFromDB = await userDatabase.getUserByEmail(user.email);
+  async getUserByEmail(loginData: LoginInputDTO) {
+    const userFromDB = await this.userDatabase.getUserByEmail(loginData.email);
 
-    const hashManager = new HashManager();
-    const hashCompare = await hashManager.compare(
-      user.password,
+    const hashCompare = await this.hashManager.compare(
+      loginData.password,
       userFromDB.getPassword()
     );
 
-    const authenticator = new Authenticator();
-    const accessToken = authenticator.generateToken({
+    const accessToken = this.authenticator.generateToken({
       id: userFromDB.getId(),
       role: userFromDB.getRole(),
     });
@@ -48,5 +43,20 @@ export class UserBusiness {
     }
 
     return accessToken;
+  }
+
+  public async getUserInfoByNickname(nickname: string): Promise<any> {
+    const userInfo = await this.userDatabase.getUserInfoByNickname(nickname);
+    return userInfo;
+  }
+
+  public async follow(token: string, followId: string): Promise<void> {
+    const userId = this.authenticator.getData(token).id;
+    await this.userDatabase.follow(userId, followId);
+  }
+
+  public async unfollow(token: string, followId: string): Promise<void> {
+    const userId = this.authenticator.getData(token).id;
+    await this.userDatabase.unfollow(userId, followId);
   }
 }
