@@ -2,13 +2,13 @@ import { BaseDatabase } from "./BaseDatabase";
 import { User } from "../model/User";
 
 export class UserDatabase extends BaseDatabase {
-
-  private static TABLE_NAME = "";
+  private static TABLE_NAME = "fs1_user";
 
   public async createUser(
     id: string,
-    email: string,
     name: string,
+    nickname: string,
+    email: string,
     password: string,
     role: string
   ): Promise<void> {
@@ -16,10 +16,11 @@ export class UserDatabase extends BaseDatabase {
       await this.getConnection()
         .insert({
           id,
-          email,
           name,
+          nickname,
+          email,
           password,
-          role
+          role,
         })
         .into(UserDatabase.TABLE_NAME);
     } catch (error) {
@@ -36,4 +37,17 @@ export class UserDatabase extends BaseDatabase {
     return User.toUserModel(result[0]);
   }
 
+  public async getUserInfoById(id: string): Promise<any> {
+    const result = await this.getConnection()
+      .select("id", "name", "nickname")
+      .from(UserDatabase.TABLE_NAME)
+      .where({ id });
+  }
+
+  public async getUserInfoByNickname(nickname: string): Promise<any> {
+    const result = await this.getConnection()
+      .select("id", "name", "nickname")
+      .from(UserDatabase.TABLE_NAME)
+      .where({ nickname });
+  }
 }

@@ -5,39 +5,48 @@ import { HashManager } from "../services/HashManager";
 import { Authenticator } from "../services/Authenticator";
 
 export class UserBusiness {
+  async createUser(user: UserInputDTO) {
+    const idGenerator = new IdGenerator();
+    const id = idGenerator.generate();
+    const hashManager = new HashManager();
+    const hashPassword = await hashManager.hash(user.password);
 
-    async createUser(user: UserInputDTO) {
+    const userDatabase = new UserDatabase();
+    await userDatabase.createUser(
+      id,
+      user.email,
+      user.name,
+      user.nickname,
+      hashPassword,
+      user.role
+    );
 
-        const idGenerator = new IdGenerator();
-        const id = idGenerator.generate();
+    const authenticator = new Authenticator();
+    const accessToken = authenticator.generateToken({ id, role: user.role });
 
-        const hashManager = new HashManager();
-        const hashPassword = await hashManager.hash(user.password);
+    return accessToken;
+  }
 
-        const userDatabase = new UserDatabase();
-        await userDatabase.createUser(id, user.email, user.name, hashPassword, user.role);
+  async getUserByEmail(user: LoginInputDTO) {
+    const userDatabase = new UserDatabase();
+    const userFromDB = await userDatabase.getUserByEmail(user.email);
 
-        const authenticator = new Authenticator();
-        const accessToken = authenticator.generateToken({ id, role: user.role });
+    const hashManager = new HashManager();
+    const hashCompare = await hashManager.compare(
+      user.password,
+      userFromDB.getPassword()
+    );
 
-        return accessToken;
+    const authenticator = new Authenticator();
+    const accessToken = authenticator.generateToken({
+      id: userFromDB.getId(),
+      role: userFromDB.getRole(),
+    });
+
+    if (!hashCompare) {
+      throw new Error("Invalid Password!");
     }
 
-    async getUserByEmail(user: LoginInputDTO) {
-
-        const userDatabase = new UserDatabase();
-        const userFromDB = await userDatabase.getUserByEmail(user.email);
-
-        const hashManager = new HashManager();
-        const hashCompare = await hashManager.compare(user.password, userFromDB.getPassword());
-
-        const authenticator = new Authenticator();
-        const accessToken = authenticator.generateToken({ id: userFromDB.getId(), role: userFromDB.getRole() });
-
-        if (!hashCompare) {
-            throw new Error("Invalid Password!");
-        }
-
-        return accessToken;
-    }
+    return accessToken;
+  }
 }
