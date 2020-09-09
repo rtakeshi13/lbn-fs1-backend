@@ -79,7 +79,7 @@ export class User {
   }
 }
 
-export interface UserInputDTO {
+export interface SignupInputDTO {
   email: string;
   password: string;
   name: string;

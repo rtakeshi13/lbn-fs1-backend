@@ -1,5 +1,5 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { User } from "../model/User";
+import { User, SignupInputDTO } from "../model/User";
 
 export class UserDatabase extends BaseDatabase {
   private static USER_TABLE_NAME = "fs1_user";
@@ -8,21 +8,18 @@ export class UserDatabase extends BaseDatabase {
 
   public async createUser(
     id: string,
-    name: string,
-    nickname: string,
-    email: string,
-    password: string,
-    role: string
+    hashPassword: string,
+    signupData: SignupInputDTO
   ): Promise<void> {
     try {
       await this.getConnection()
         .insert({
           id,
-          name,
-          nickname,
-          email,
-          password,
-          role,
+          name: signupData.name,
+          nickname: signupData.nickname,
+          email: signupData.email,
+          password: hashPassword,
+          role: signupData.role,
         })
         .into(UserDatabase.USER_TABLE_NAME);
     } catch (error) {
@@ -74,5 +71,18 @@ export class UserDatabase extends BaseDatabase {
       .where({ nickname });
 
     return response[0];
+  }
+
+  public async follow(userId: string, followId: string): Promise<void> {
+    await this.getConnection()
+      .insert({ user_id: userId, follow_id: followId })
+      .into(UserDatabase.RELATION_TABLE_NAME);
+  }
+
+  public async unfollow(userId: string, followId: string): Promise<void> {
+    await this.getConnection()
+      .del()
+      .from(UserDatabase.RELATION_TABLE_NAME)
+      .where({ user_id: userId, follow_id: followId });
   }
 }
