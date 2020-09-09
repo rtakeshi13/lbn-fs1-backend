@@ -1,5 +1,6 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { Post, PostInputDTO } from "../model/Post";
+import { DateFormatter } from "../services/DateFormatter";
 
 export class PostDatabase extends BaseDatabase {
   private static POST_TABLE_NAME = "fs1_post";
@@ -18,7 +19,7 @@ export class PostDatabase extends BaseDatabase {
           user_id: userId,
           media_url: postData.mediaUrl,
           caption: postData.caption,
-          created_at: Date.now(),
+          created_at: new DateFormatter().nowToMySqlDatetime(),
         })
         .into(PostDatabase.POST_TABLE_NAME);
     } catch (error) {
