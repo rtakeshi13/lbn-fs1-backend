@@ -12,7 +12,7 @@ export class PostBusiness {
   ) {}
   async createPost(token: string, postData: PostInputDTO) {
     if (!Validator.validateDto(postData, new PostInputDTO())) {
-      console.log("bad");
+      throw new Error("Invalid or missing parameters");
     }
 
     const userId = this.authenticator.getData(token).id;

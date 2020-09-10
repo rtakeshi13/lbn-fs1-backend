@@ -73,13 +73,58 @@ export class UserDatabase extends BaseDatabase {
     return response[0];
   }
 
+  private async checkIfUserExistsById(userId: string): Promise<boolean> {
+    const response = await this.getConnection()
+      .count("id AS count")
+      .from(UserDatabase.USER_TABLE_NAME)
+      .where({ id: userId });
+    return Boolean(response[0].count);
+  }
+
+  private async checkIfUserPairExistsById(
+    userId: string,
+    followId: string
+  ): Promise<boolean> {
+    const response = await this.getConnection()
+      .count("id AS count")
+      .from(UserDatabase.USER_TABLE_NAME)
+      .whereIn("id", [userId, followId]);
+    return response[0].count === 2;
+  }
+
+  private async checkIfUserRelationExistsById(
+    userId: string,
+    followId: string
+  ): Promise<boolean> {
+    const response = await this.getConnection()
+      .count("user_id AS count")
+      .from(UserDatabase.RELATION_TABLE_NAME)
+      .where({ user_id: userId })
+      .andWhere({ follow_id: followId });
+    return response[0].count === 1;
+  }
+
   public async follow(userId: string, followId: string): Promise<void> {
-    await this.getConnection()
-      .insert({ user_id: userId, follow_id: followId })
-      .into(UserDatabase.RELATION_TABLE_NAME);
+    if (!(await this.checkIfUserPairExistsById(userId, followId)))
+      throw new Error("Invalid user id");
+
+    try {
+      await this.getConnection()
+        .insert({ user_id: userId, follow_id: followId })
+        .into(UserDatabase.RELATION_TABLE_NAME);
+    } catch (error) {
+      if (error.code === "ER_DUP_ENTRY") {
+        throw new Error("Already following this user");
+      } else {
+        throw new Error("This is weird");
+      }
+    }
   }
 
   public async unfollow(userId: string, followId: string): Promise<void> {
+    if (!(await this.checkIfUserRelationExistsById(userId, followId))) {
+      throw new Error("No relation between users");
+    }
     await this.getConnection()
       .del()
       .from(UserDatabase.RELATION_TABLE_NAME)

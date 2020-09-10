@@ -79,17 +79,18 @@ export class User {
   }
 }
 
-export interface SignupInputDTO {
-  email: string;
-  password: string;
-  name: string;
-  nickname: string;
-  role: string;
+export class SignupInputDTO {
+  constructor(
+    public email: string = "",
+    public password: string = "",
+    public name: string = "",
+    public nickname: string = "",
+    public role: string = ""
+  ) {}
 }
 
-export interface LoginInputDTO {
-  email: string;
-  password: string;
+export class LoginInputDTO {
+  constructor(public email: string = "", public password: string = "") {}
 }
 
 export interface UserInfoDTO {

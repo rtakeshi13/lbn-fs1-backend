@@ -15,14 +15,25 @@ export abstract class Validator {
         return false;
 
       /* Check if types match when value is an array */
-      if (
-        Array.isArray(obj[key]) &&
+      if (Array.isArray(dto[key]) !== Array.isArray(obj[key])) {
+        return false;
+      } else if (
+        Array.isArray(dto[key]) &&
         obj[key].filter((item: any) => typeof item !== typeof dto[key][0])
           .length
       )
         return false;
     }
-
     return true;
+  }
+
+  static validateString(str: any): boolean {
+    /* Check for string type */
+    if (typeof str !== "string") {
+      return false;
+    } else {
+      /* Check if string is empty or contains only spaces */
+      return Boolean(str.replace(/\s+/, ""));
+    }
   }
 }
