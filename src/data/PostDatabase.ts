@@ -19,7 +19,7 @@ export class PostDatabase extends BaseDatabase {
           user_id: userId,
           media_url: postData.mediaUrl,
           caption: postData.caption,
-          created_at: new DateFormatter().nowToMySqlDatetime(),
+          created_at: DateFormatter.currentTimeToMySqlDatetime(),
         })
         .into(PostDatabase.POST_TABLE_NAME);
     } catch (error) {

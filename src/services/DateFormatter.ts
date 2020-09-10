@@ -1,10 +1,10 @@
 import moment from "moment";
 
-export class DateFormatter {
-  public nowToMySqlDatetime(): string {
+export abstract class DateFormatter {
+  public static currentTimeToMySqlDatetime(): string {
     return moment().format("YYYY-MM-DD HH:mm:ss");
   }
-  public mySqlDatetimeToMilliseconds(datetime: string): number {
+  public static mySqlDatetimeToMilliseconds(datetime: string): number {
     return moment(datetime, "YYYY-MM-DD HH:mm:ss").valueOf();
   }
 }

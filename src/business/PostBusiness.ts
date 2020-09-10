@@ -2,7 +2,7 @@ import { PostInputDTO } from "../model/Post";
 import { PostDatabase } from "../data/PostDatabase";
 import { IdGenerator } from "../services/IdGenerator";
 import { Authenticator } from "../services/Authenticator";
-import { DateFormatter } from "../services/DateFormatter";
+import { Validator } from "../services/Validator";
 
 export class PostBusiness {
   constructor(
@@ -11,6 +11,10 @@ export class PostBusiness {
     private postDatabase: PostDatabase
   ) {}
   async createPost(token: string, postData: PostInputDTO) {
+    if (!Validator.validateDto(postData, new PostInputDTO())) {
+      console.log("bad");
+    }
+
     const userId = this.authenticator.getData(token).id;
     const postId = this.idGenerator.generate();
 
