@@ -6,19 +6,15 @@ export abstract class Validator {
     /* Check if all keys in dto are present in obj */
     if (dtoKeys.filter((item) => !objKeys.includes(item)).length) return false;
 
-    /* Check if types match */
-    for (let key of objKeys) {
+    for (let key of dtoKeys) {
+      /* Check if types match */
       if (typeof obj[key] !== typeof dto[key]) return false;
-    }
 
-    /* Check for empty strings */
-    for (let key of objKeys) {
+      /* Check for empty strings */
       if (typeof obj[key] === "string" && !obj[key].replace(/\s+/g, ""))
         return false;
-    }
 
-    /* Check if types match when value is an array */
-    for (let key of objKeys) {
+      /* Check if types match when value is an array */
       if (
         Array.isArray(obj[key]) &&
         obj[key].filter((item: any) => typeof item !== typeof dto[key][0])

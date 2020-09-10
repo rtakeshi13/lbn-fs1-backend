@@ -32,7 +32,10 @@ export class PostDatabase extends BaseDatabase {
       const response = await this.getConnection()
         .select()
         .from(PostDatabase.POST_TABLE_NAME)
-        .where({ user_id: userId });
+        .where({ user_id: userId })
+        .orderBy("created_at", "desc")
+        .limit(3)
+        .offset(2);
       return response.map((item) => Post.toPostDTO(item));
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
