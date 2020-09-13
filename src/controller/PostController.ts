@@ -24,11 +24,10 @@ export class PostController {
 
       res.status(200).send({ sucess: true });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ error });
     }
-
-    await BaseDatabase.destroyConnection();
   }
+
   async getPostsByUserId(req: Request, res: Response) {
     try {
       const postBusiness = new PostBusiness(
@@ -36,13 +35,15 @@ export class PostController {
         new IdGenerator(),
         new PostDatabase()
       );
-      const posts = await postBusiness.getPostsByUserId(req.params.userId);
+      const userId = req.query.userId as string;
+      const posts = await postBusiness.getPostsByUserId(
+        userId,
+        Number(req.query.page)
+      );
 
       res.status(200).send({ posts });
     } catch (error) {
       res.status(400).send({ error: error.message });
     }
-
-    await BaseDatabase.destroyConnection();
   }
 }

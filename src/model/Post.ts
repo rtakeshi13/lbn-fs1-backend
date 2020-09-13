@@ -65,18 +65,17 @@ export class Post {
       userId: post.user_id,
       mediaUrl: post.media_url,
       caption: post.caption,
-      createdAt: new DateFormatter().mySqlDatetimeToMilliseconds(
-        post.created_at
-      ),
+      createdAt: DateFormatter.mySqlDatetimeToMilliseconds(post.created_at),
     };
   }
 }
 
-export interface PostInputDTO {
-  caption: string;
-  mediaUrl: string;
-  tags: string[];
-  collectionsIds: string[];
+export class PostInputDTO {
+  constructor(
+    public caption: string = "",
+    public mediaUrl: string = "",
+    public collectionId: string = ""
+  ) {}
 }
 
 export interface PostDTO {
