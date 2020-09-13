@@ -105,3 +105,4 @@ dist
 
 dbinfo.txt
 package-lock.json
+build/
