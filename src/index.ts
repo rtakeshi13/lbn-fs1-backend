@@ -13,7 +13,7 @@ app.use(cors());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 
-const server = app.listen(Number(process.env.port) || 3003, () => {
+const server = app.listen(Number(process.env.PORT) || 3003, () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(
