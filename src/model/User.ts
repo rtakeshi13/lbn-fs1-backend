@@ -84,13 +84,15 @@ export class SignupInputDTO {
     public email: string = "",
     public password: string = "",
     public name: string = "",
-    public nickname: string = "",
-    public role: string = ""
+    public nickname: string = ""
   ) {}
 }
 
 export class LoginInputDTO {
-  constructor(public email: string = "", public password: string = "") {}
+  constructor(
+    public emailOrNickname: string = "",
+    public password: string = ""
+  ) {}
 }
 
 export interface UserInfoDTO {

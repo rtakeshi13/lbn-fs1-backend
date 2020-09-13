@@ -19,7 +19,6 @@ export class UserDatabase extends BaseDatabase {
           nickname: signupData.nickname,
           email: signupData.email,
           password: hashPassword,
-          role: signupData.role,
         })
         .into(UserDatabase.USER_TABLE_NAME);
     } catch (error) {
@@ -34,6 +33,16 @@ export class UserDatabase extends BaseDatabase {
       .where({ email });
 
     return User.toUserModel(result[0]);
+  }
+
+  public async getUserByEmailOrNickname(input: string): Promise<User> {
+    const response = await this.getConnection()
+      .select()
+      .from(UserDatabase.USER_TABLE_NAME)
+      .where({ email: input })
+      .orWhere({ nickname: input });
+    if (!response[0]) throw new Error("UserDatabase:getUserByEmailOrNickname");
+    return User.toUserModel(response[0]);
   }
 
   public async getUserInfoById(id: string): Promise<any> {
@@ -69,7 +78,9 @@ export class UserDatabase extends BaseDatabase {
       )
       .from({ u: UserDatabase.USER_TABLE_NAME })
       .where({ nickname });
+    await UserDatabase.destroyConnection();
 
+    if (!response[0]) throw new Error("UserDatabase:getUserInfoByNickname");
     return response[0];
   }
 

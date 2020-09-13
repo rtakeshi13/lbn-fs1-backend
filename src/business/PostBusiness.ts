@@ -20,7 +20,7 @@ export class PostBusiness {
 
     await this.postDatabase.createPost(postId, userId, postData);
   }
-  async getPostsByUserId(userId: string) {
-    return this.postDatabase.getPostsByUserId(userId);
+  async getPostsByUserId(userId: string, page: number) {
+    return this.postDatabase.getPostsByUserId(userId, page);
   }
 }

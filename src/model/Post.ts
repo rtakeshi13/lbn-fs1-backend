@@ -74,7 +74,6 @@ export class PostInputDTO {
   constructor(
     public caption: string = "",
     public mediaUrl: string = "",
-    public tags: string[] = [""],
     public collectionId: string = ""
   ) {}
 }
