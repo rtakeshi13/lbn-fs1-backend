@@ -11,6 +11,7 @@ export class PostBusiness {
     private postDatabase: PostDatabase
   ) {}
   async createPost(token: string, postData: PostInputDTO) {
+    console.log("PostBusiness");
     if (!Validator.validateDto(postData, new PostInputDTO())) {
       throw new Error("Invalid or missing parameters");
     }

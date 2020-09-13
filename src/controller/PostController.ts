@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { BaseDatabase } from "../data/BaseDatabase";
-import { UserDatabase } from "../data/UserDatabase";
 import { IdGenerator } from "../services/IdGenerator";
 import { Authenticator } from "../services/Authenticator";
 import { PostInputDTO } from "../model/Post";
@@ -9,6 +7,7 @@ import { PostBusiness } from "../business/PostBusiness";
 
 export class PostController {
   async createPost(req: Request, res: Response) {
+    console.log("PostController");
     try {
       const postData: PostInputDTO = req.body;
 
