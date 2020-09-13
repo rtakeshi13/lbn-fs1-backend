@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 
-const server = app.listen(80, () => {
+const server = app.listen(8080, () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(`Server running on http://localhost:${address.port}`);
