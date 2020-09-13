@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 
-const server = app.listen(process.env.port || 3003, () => {
+const server = app.listen(Number(process.env.port) || 3003, "0.0.0.0", () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(
