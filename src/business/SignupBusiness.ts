@@ -13,7 +13,6 @@ export class SignupBusiness {
     private userDatabase: UserDatabase
   ) {}
   async execute(signupData: SignupInputDTO) {
-    console.log("SignupBusiness");
     if (!Validator.validateDto(signupData, new SignupInputDTO())) {
       throw new Error("Invalid or missing parameters");
     }
