@@ -13,7 +13,7 @@ app.use(cors());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 
-const server = app.listen(3003, () => {
+const server = app.listen(80, () => {
   if (server) {
     const address = server.address() as AddressInfo;
     console.log(`Server running on http://localhost:${address.port}`);
