@@ -21,9 +21,9 @@ export class UserController {
       );
       const nicknameAndToken = await signupBusiness.execute(signupData);
 
-      res.status(200).send(nicknameAndToken);
+      res.status(200).send({ sucess: true, ...nicknameAndToken });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 
@@ -38,9 +38,9 @@ export class UserController {
       );
       const nicknameAndToken = await loginBusiness.execute(loginData);
 
-      res.status(200).send(nicknameAndToken);
+      res.status(200).send({ sucess: true, ...nicknameAndToken });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 
@@ -54,9 +54,9 @@ export class UserController {
       const user = await userBusiness.getUserInfoByNickname(
         req.params.nickname as string
       );
-      res.status(200).send({ user });
+      res.status(200).send({ sucess: true, user });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 
@@ -72,7 +72,7 @@ export class UserController {
       );
       res.status(200).send({ sucess: true });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 
@@ -88,7 +88,7 @@ export class UserController {
       );
       res.status(200).send({ sucess: true });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 }

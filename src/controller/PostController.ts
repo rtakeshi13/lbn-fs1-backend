@@ -40,9 +40,9 @@ export class PostController {
         Number(req.query.page)
       );
 
-      res.status(200).send({ posts });
+      res.status(200).send({ sucess: true, posts });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 }
