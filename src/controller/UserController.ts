@@ -10,6 +10,7 @@ import { SignupBusiness } from "../business/SignupBusiness";
 
 export class UserController {
   async signup(req: Request, res: Response) {
+    console.log("UserController");
     try {
       const signupData: SignupInputDTO = req.body;
 

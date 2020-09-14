@@ -11,6 +11,7 @@ export class UserDatabase extends BaseDatabase {
     hashPassword: string,
     signupData: SignupInputDTO
   ): Promise<void> {
+    console.log("UserDatabase");
     try {
       await this.getConnection()
         .insert({
