@@ -7,7 +7,7 @@
     "build": "tsc",
     "postinstall": "npm run build",
     "start": "node ./build/index.js",
-    "start:dev": "ts-node ./src/index.ts"
+    "start:dev": "ts-node-dev ./src/index.ts"
   },
   "keywords": [
     "api",

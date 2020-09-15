@@ -44,14 +44,14 @@ export class UserController {
     }
   }
 
-  async getUserInfoByNickname(req: Request, res: Response) {
+  async getUserByNickname(req: Request, res: Response) {
     try {
       const userBusiness = new UserBusiness(
         new Authenticator(),
         new UserDatabase()
       );
 
-      const user = await userBusiness.getUserInfoByNickname(
+      const user = await userBusiness.getUserByNickname(
         req.params.nickname as string
       );
       res.status(200).send({ sucess: true, user });

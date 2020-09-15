@@ -1,11 +1,13 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { User, SignupInputDTO } from "../model/User";
 import { PostDatabase } from "./PostDatabase";
+import { Collection } from "../model/Collection";
 
 export class UserDatabase extends BaseDatabase {
   private static USER_TABLE_NAME = "fs1_user";
   private static RELATION_TABLE_NAME = "fs1_user_relation";
   private static POST_TABLE_NAME = "fs1_post";
+  private static COLLECTION_TABLE_NAME = "fs1_collection";
 
   public async createUser(
     id: string,
@@ -37,10 +39,10 @@ export class UserDatabase extends BaseDatabase {
     return User.toUserModel(response[0]);
   }
 
-  public async getUserInfoByNickname(nickname: string): Promise<any> {
+  public async getUserByNickname(nickname: string): Promise<any> {
     const knex = this.getConnection();
 
-    const response = await knex
+    const userFromDb = await knex
       .select(
         "u.id",
         "u.name",
@@ -59,18 +61,29 @@ export class UserDatabase extends BaseDatabase {
           .count("user_id")
           .from(UserDatabase.RELATION_TABLE_NAME)
           .where("user_id", knex.ref("u.id"))
-          .as("followingCount"),
-        knex.raw(`(SELECT GROUP_CONCAT(c.id, c.name, c.description, c.thumbnail_url, c.created_at
-                     FROM fs1_collection c JOIN u ON c.user_id = u.id
-                     WHERE u.nickname = '${nickname}'
-            )) AS collections`)
+          .as("followingCount")
       )
       .from({ u: UserDatabase.USER_TABLE_NAME })
       .where({ nickname });
+
+    if (!userFromDb[0]) throw new Error("UserDatabase:getUserInfoByNickname");
+
+    const user = User.toUserDTO(userFromDb[0]);
+    const collectionsFromDb = await knex
+      .select(
+        "c.id",
+        "c.name",
+        "c.description",
+        "c.thumbnail_url",
+        "c.created_at"
+      )
+      .from({ c: UserDatabase.COLLECTION_TABLE_NAME })
+      .where({ user_id: user.id });
+    user.collections = Collection.toColletionsDTO(collectionsFromDb);
+
     await UserDatabase.destroyConnection();
 
-    if (!response[0]) throw new Error("UserDatabase:getUserInfoByNickname");
-    return response[0];
+    return user;
   }
 
   private async checkIfUserPairExistsById(

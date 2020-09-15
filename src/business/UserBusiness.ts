@@ -8,10 +8,10 @@ export class UserBusiness {
     private userDatabase: UserDatabase
   ) {}
 
-  public async getUserInfoByNickname(nickname: string): Promise<any> {
+  public async getUserByNickname(nickname: string): Promise<any> {
     Validator.validateString(nickname);
 
-    const userInfo = await this.userDatabase.getUserInfoByNickname(nickname);
+    const userInfo = await this.userDatabase.getUserByNickname(nickname);
     return userInfo;
   }
 

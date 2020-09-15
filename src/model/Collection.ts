@@ -59,15 +59,16 @@ export class Collection {
     this.user = user;
   }
 
-  static toColletionDTO(collection: any): CollectionOutputDTO {
-    return {
-      collectionId: collection.id,
+  static toColletionsDTO(collections: any[]): CollectionOutputDTO[] {
+    return collections.map((collection) => ({
+      id: collection.id,
       name: collection.name,
       description: collection.description,
       createdAt: DateFormatter.mySqlDatetimeToMilliseconds(
         collection.created_at
       ),
-    };
+      thumbnailUrl: collection.thumbnail_url,
+    }));
   }
 }
 
@@ -80,8 +81,9 @@ export class CollectionInputDTO {
 }
 
 export interface CollectionOutputDTO {
-  collectionId: string;
+  id: string;
   name: string;
   description: string;
   createdAt: number;
+  thumbnailUrl: string;
 }

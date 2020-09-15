@@ -82,6 +82,7 @@ export class User {
 
   static toUserDTO(user: any): UserOutputDTO {
     return {
+      id: user.id,
       name: user.name,
       nickname: user.nickname,
       postsCount: user.postsCount,
@@ -109,6 +110,7 @@ export class LoginInputDTO {
 }
 
 export interface UserOutputDTO {
+  id: string;
   name: string;
   nickname: string;
   postsCount: number;
