@@ -1,7 +1,7 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { User, SignupInputDTO } from "../model/User";
 import { PostDatabase } from "./PostDatabase";
-import { Collection } from "../model/Collection";
+import { Collection, CollectionOutputDTO } from "../model/Collection";
 
 export class UserDatabase extends BaseDatabase {
   private static USER_TABLE_NAME = "fs1_user";
@@ -86,20 +86,6 @@ export class UserDatabase extends BaseDatabase {
     await UserDatabase.destroyConnection();
 
     return user;
-  }
-
-  async getCollectionByUserId(userId: string) {
-    const collections = await this.getConnection()
-      .select(
-        "c.id",
-        "c.name",
-        "c.description",
-        "c.thumbnail_url",
-        "c.created_at"
-      )
-      .from({ c: UserDatabase.COLLECTION_TABLE_NAME })
-      .where({ user_id: user.id })
-      .orderBy("created_at", "desc");
   }
 
   private async checkIfUserPairExistsById(

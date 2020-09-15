@@ -1,7 +1,11 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { Post, PostInputDTO, PostOutputDTO } from "../model/Post";
 import { DateFormatter } from "../services/DateFormatter";
-import { CollectionInputDTO } from "../model/Collection";
+import {
+  CollectionInputDTO,
+  CollectionOutputDTO,
+  Collection,
+} from "../model/Collection";
 
 export class PostDatabase extends BaseDatabase {
   private static POST_TABLE_NAME = "fs1_post";
@@ -9,6 +13,7 @@ export class PostDatabase extends BaseDatabase {
   private static TAG_TABLE_NAME = "fs1_tag";
   private static POST_TAG_TABLE_NAME = "fs1_post_tag";
   private static COLLECTION_TABLE_NAME = "fs1_collection";
+  private static POST_COLLECTION_TABLE_NAME = "fs1_post_collection";
 
   /* This method could probably be optimized by denormalizing the database, */
   /* therefore requiring fewer transactions */
@@ -69,6 +74,15 @@ export class PostDatabase extends BaseDatabase {
       await knex
         .insert(postTagInsertions)
         .into(PostDatabase.POST_TAG_TABLE_NAME);
+
+      /* Inserts post-collection  */
+      const postCollectionInsertions = postData.collectionsIds.map((item) => ({
+        post_id: postId,
+        collection_id: item,
+      }));
+      await knex
+        .insert(postCollectionInsertions)
+        .into(PostDatabase.POST_COLLECTION_TABLE_NAME);
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -111,5 +125,22 @@ export class PostDatabase extends BaseDatabase {
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
+  }
+
+  async getCollectionByUserId(userId: string): Promise<any[]> {
+    const collectionsFromDb = await this.getConnection()
+      .select("c.id", "c.name")
+      .from({ c: PostDatabase.COLLECTION_TABLE_NAME })
+      .where({ user_id: userId })
+      .orderBy("created_at", "desc");
+
+    const collections = collectionsFromDb.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+
+    await PostDatabase.destroyConnection();
+
+    return collections;
   }
 }

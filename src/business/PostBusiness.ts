@@ -40,4 +40,9 @@ export class PostBusiness {
       collectionData
     );
   }
+
+  async getCollectionsByUserId(token: string) {
+    const userId = this.authenticator.getData(token).id;
+    return this.postDatabase.getCollectionByUserId(userId);
+  }
 }

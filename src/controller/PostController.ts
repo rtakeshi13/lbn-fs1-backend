@@ -65,4 +65,22 @@ export class PostController {
       res.status(400).send({ sucess: false, message: error.message });
     }
   }
+
+  async getCollectionsByUserId(req: Request, res: Response) {
+    try {
+      const postBusiness = new PostBusiness(
+        new Authenticator(),
+        new IdGenerator(),
+        new PostDatabase()
+      );
+
+      const collections = await postBusiness.getCollectionsByUserId(
+        req.headers.authorization as string
+      );
+
+      res.status(200).send({ sucess: true, collections });
+    } catch (error) {
+      res.status(400).send({ sucess: false, message: error.message });
+    }
+  }
 }
