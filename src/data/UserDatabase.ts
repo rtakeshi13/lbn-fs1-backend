@@ -1,5 +1,6 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { User, SignupInputDTO } from "../model/User";
+import { PostDatabase } from "./PostDatabase";
 
 export class UserDatabase extends BaseDatabase {
   private static USER_TABLE_NAME = "fs1_user";
@@ -26,15 +27,6 @@ export class UserDatabase extends BaseDatabase {
     }
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
-    const result = await this.getConnection()
-      .select("*")
-      .from(UserDatabase.USER_TABLE_NAME)
-      .where({ email });
-
-    return User.toUserModel(result[0]);
-  }
-
   public async getUserByEmailOrNickname(input: string): Promise<User> {
     const response = await this.getConnection()
       .select()
@@ -43,13 +35,6 @@ export class UserDatabase extends BaseDatabase {
       .orWhere({ nickname: input });
     if (!response[0]) throw new Error("UserDatabase:getUserByEmailOrNickname");
     return User.toUserModel(response[0]);
-  }
-
-  public async getUserInfoById(id: string): Promise<any> {
-    const result = await this.getConnection()
-      .select("id", "name", "nickname")
-      .from(UserDatabase.USER_TABLE_NAME)
-      .where({ id });
   }
 
   public async getUserInfoByNickname(nickname: string): Promise<any> {
@@ -74,7 +59,11 @@ export class UserDatabase extends BaseDatabase {
           .count("user_id")
           .from(UserDatabase.RELATION_TABLE_NAME)
           .where("user_id", knex.ref("u.id"))
-          .as("followingCount")
+          .as("followingCount"),
+        knex.raw(`(SELECT GROUP_CONCAT(c.id, c.name, c.description, c.thumbnail_url, c.created_at
+                     FROM fs1_collection c JOIN u ON c.user_id = u.id
+                     WHERE u.nickname = '${nickname}'
+            )) AS collections`)
       )
       .from({ u: UserDatabase.USER_TABLE_NAME })
       .where({ nickname });
@@ -82,14 +71,6 @@ export class UserDatabase extends BaseDatabase {
 
     if (!response[0]) throw new Error("UserDatabase:getUserInfoByNickname");
     return response[0];
-  }
-
-  private async checkIfUserExistsById(userId: string): Promise<boolean> {
-    const response = await this.getConnection()
-      .count("id AS count")
-      .from(UserDatabase.USER_TABLE_NAME)
-      .where({ id: userId });
-    return Boolean(response[0].count);
   }
 
   private async checkIfUserPairExistsById(

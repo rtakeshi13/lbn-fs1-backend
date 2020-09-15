@@ -1,3 +1,5 @@
+import { CollectionOutputDTO } from "./Collection";
+
 export class User {
   constructor(
     private id: string,
@@ -77,6 +79,17 @@ export class User {
       User.stringToUserRole(user.role)
     );
   }
+
+  static toUserDTO(user: any): UserOutputDTO {
+    return {
+      name: user.name,
+      nickname: user.nickname,
+      postsCount: user.postsCount,
+      followersCount: user.followersCount,
+      followingCount: user.followingCount,
+      collections: [],
+    };
+  }
 }
 
 export class SignupInputDTO {
@@ -95,12 +108,13 @@ export class LoginInputDTO {
   ) {}
 }
 
-export interface UserInfoDTO {
+export interface UserOutputDTO {
   name: string;
   nickname: string;
   postsCount: number;
   followersCount: number;
   followingCount: number;
+  collections: CollectionOutputDTO[];
 }
 
 export enum UserRole {

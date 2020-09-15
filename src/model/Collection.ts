@@ -67,7 +67,6 @@ export class Collection {
       createdAt: DateFormatter.mySqlDatetimeToMilliseconds(
         collection.created_at
       ),
-      userId: collection.user_id,
     };
   }
 }
@@ -85,5 +84,4 @@ export interface CollectionOutputDTO {
   name: string;
   description: string;
   createdAt: number;
-  userId: number;
 }
