@@ -9,23 +9,23 @@ export class UserBusiness {
   ) {}
 
   public async getUserInfoByNickname(nickname: string): Promise<any> {
-    if (!Validator.validateString(nickname)) {
-      throw new Error("Invalid or missing parameters");
-    }
+    Validator.validateString(nickname);
+
     const userInfo = await this.userDatabase.getUserInfoByNickname(nickname);
     return userInfo;
   }
 
   public async follow(token: string, followId: string): Promise<void> {
-    if (!Validator.validateString(followId)) {
-      throw new Error("Invalid or missing parameters");
-    }
+    Validator.validateString(followId);
+
     const userId = this.authenticator.getData(token).id;
     await this.userDatabase.follow(userId, followId);
   }
 
-  public async unfollow(token: string, followId: string): Promise<void> {
+  public async unfollow(token: string, unfollowId: string): Promise<void> {
+    Validator.validateString(unfollowId);
+
     const userId = this.authenticator.getData(token).id;
-    await this.userDatabase.unfollow(userId, followId);
+    await this.userDatabase.unfollow(userId, unfollowId);
   }
 }

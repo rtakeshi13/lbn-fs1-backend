@@ -1,6 +1,7 @@
 import { BaseDatabase } from "./BaseDatabase";
-import { Post, PostInputDTO } from "../model/Post";
+import { Post, PostInputDTO, PostOutputDTO } from "../model/Post";
 import { DateFormatter } from "../services/DateFormatter";
+import { CollectionInputDTO } from "../model/Collection";
 
 export class PostDatabase extends BaseDatabase {
   private static POST_TABLE_NAME = "fs1_post";
@@ -27,9 +28,9 @@ export class PostDatabase extends BaseDatabase {
           media_url: postData.mediaUrl,
           caption: postData.caption,
           created_at: DateFormatter.currentTimeToMySqlDatetime(),
-          collection_id: postData.collectionId,
         })
         .into(PostDatabase.POST_TABLE_NAME);
+
       const tagsFromClient = postData.caption
         .split(/\s+|\n+/)
         .filter((item) => item.match(/#\w+/));
@@ -73,7 +74,10 @@ export class PostDatabase extends BaseDatabase {
     }
   }
 
-  public async getPostsByUserId(userId: string, page: number) {
+  public async getPostsByUserId(
+    userId: string,
+    page: number
+  ): Promise<PostOutputDTO[]> {
     try {
       const response = await this.getConnection()
         .select()
@@ -83,6 +87,27 @@ export class PostDatabase extends BaseDatabase {
         .limit(PostDatabase.POST_LIMIT)
         .offset(PostDatabase.POST_LIMIT * page);
       return response.map((item) => Post.toPostDTO(item));
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
+
+  public async createCollection(
+    collectionId: string,
+    userId: string,
+    collectionData: CollectionInputDTO
+  ): Promise<void> {
+    try {
+      await this.getConnection()
+        .insert({
+          id: collectionId,
+          name: collectionData.name,
+          description: collectionData.description,
+          thumbnail_url: collectionData.thumbnailUrl,
+          created_at: DateFormatter.currentTimeToMySqlDatetime(),
+          userId: userId,
+        })
+        .into(PostDatabase.COLLECTION_TABLE_NAME);
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
