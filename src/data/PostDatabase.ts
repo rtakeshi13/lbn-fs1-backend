@@ -15,8 +15,6 @@ export class PostDatabase extends BaseDatabase {
   private static COLLECTION_TABLE_NAME = "fs1_collection";
   private static POST_COLLECTION_TABLE_NAME = "fs1_post_collection";
 
-  /* This method could probably be optimized by denormalizing the database, */
-  /* therefore requiring fewer transactions */
   public async createPost(
     postId: string,
     userId: string,
@@ -38,7 +36,9 @@ export class PostDatabase extends BaseDatabase {
 
       const tagsFromClient = postData.caption
         .split(/\s+|\n+/)
-        .filter((item) => item.match(/#\w+/));
+        .filter(
+          (item, idx, arr) => arr.indexOf(item) === idx && item.match(/#\w+/)
+        );
 
       /* Select existing tags */
       const tagsFromDb = await knex
