@@ -105,7 +105,7 @@ export class PostDatabase extends BaseDatabase {
           description: collectionData.description,
           thumbnail_url: collectionData.thumbnailUrl,
           created_at: DateFormatter.currentTimeToMySqlDatetime(),
-          userId: userId,
+          user_id: userId,
         })
         .into(PostDatabase.COLLECTION_TABLE_NAME);
     } catch (error) {
