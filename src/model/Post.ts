@@ -59,7 +59,7 @@ export class Post {
     );
   }
 
-  static toPostDTO(post: any): PostDTO {
+  static toPostDTO(post: any): PostOutputDTO {
     return {
       postId: post.id,
       userId: post.user_id,
@@ -74,11 +74,11 @@ export class PostInputDTO {
   constructor(
     public caption: string = "",
     public mediaUrl: string = "",
-    public collectionId: string = ""
+    public collectionsIds: string[] = ["id"]
   ) {}
 }
 
-export interface PostDTO {
+export interface PostOutputDTO {
   postId: string;
   userId: string;
   mediaUrl: string;
