@@ -38,7 +38,8 @@ export class PostDatabase extends BaseDatabase {
         .split(/\s+|\n+/)
         .filter(
           (item, idx, arr) => arr.indexOf(item) === idx && item.match(/#\w+/)
-        );
+        )
+        .map((item) => item.replace("#", ""));
 
       /* Select existing tags */
       const tagsFromDb = await knex
