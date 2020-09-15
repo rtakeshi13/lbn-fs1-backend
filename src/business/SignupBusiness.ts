@@ -13,9 +13,8 @@ export class SignupBusiness {
     private userDatabase: UserDatabase
   ) {}
   async execute(signupData: SignupInputDTO) {
-    if (!Validator.validateDto(signupData, new SignupInputDTO())) {
-      throw new Error("Invalid or missing parameters");
-    }
+    Validator.validateDto(signupData, new SignupInputDTO());
+
     const id = this.idGenerator.generate();
     const hashPassword = await this.hashManager.hash(signupData.password);
 

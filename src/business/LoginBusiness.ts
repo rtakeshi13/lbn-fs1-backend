@@ -12,9 +12,8 @@ export class LoginBusiness {
   ) {}
 
   async execute(loginData: LoginInputDTO) {
-    if (!Validator.validateDto(loginData, new LoginInputDTO())) {
-      throw new Error("Invalid or missing parameters");
-    }
+    Validator.validateDto(loginData, new LoginInputDTO());
+
     const userFromDB = await this.userDatabase.getUserByEmailOrNickname(
       loginData.emailOrNickname
     );
