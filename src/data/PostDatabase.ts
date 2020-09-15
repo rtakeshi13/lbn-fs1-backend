@@ -18,8 +18,8 @@ export class PostDatabase extends BaseDatabase {
   ): Promise<void> {
     try {
       const knex = this.getConnection();
-      console.log("PostDatabase: getConnection");
-      /* Inserts new post in posts table */
+
+      /* Inserts new post */
       await knex
         .insert({
           id: postId,
@@ -30,18 +30,17 @@ export class PostDatabase extends BaseDatabase {
           collection_id: postData.collectionId,
         })
         .into(PostDatabase.POST_TABLE_NAME);
-      console.log("insert post");
       const tagsFromClient = postData.caption
         .split(/\s+|\n+/)
         .filter((item) => item.match(/#\w+/));
 
-      /* Select existing tags from database */
+      /* Select existing tags */
       const tagsFromDb = await knex
         .select()
         .from(PostDatabase.TAG_TABLE_NAME)
         .whereIn("tag", tagsFromClient);
-      console.log("select tags");
-      /* Insert tags that are not present in db */
+
+      /* Insert tags that are not present in table */
       const tagNamesFromDb = tagsFromDb.map((item) => item.tag);
       const tagsNotInDb = tagsFromClient.filter(
         (item, idx, arr) =>
@@ -54,7 +53,7 @@ export class PostDatabase extends BaseDatabase {
           )
         )
       ).map((item) => item[0]);
-      console.log("insert new tags");
+
       /* Create objects for insertion in post-tag relation table */
       const allTagsIds = tagsFromDb
         .map((dbItem) => dbItem.id)
@@ -69,7 +68,6 @@ export class PostDatabase extends BaseDatabase {
       await knex
         .insert(postTagInsertions)
         .into(PostDatabase.POST_TAG_TABLE_NAME);
-      console.log("insert post-tag");
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }

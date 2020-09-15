@@ -7,7 +7,6 @@ import { PostBusiness } from "../business/PostBusiness";
 
 export class PostController {
   async createPost(req: Request, res: Response) {
-    console.log("PostController");
     try {
       const postData: PostInputDTO = req.body;
 
