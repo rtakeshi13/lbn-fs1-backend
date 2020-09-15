@@ -34,7 +34,7 @@ export abstract class Validator {
 
   static validateString(str: any): void {
     /* Check for string type */
-    if (typeof str !== "string" || str.replace(/\s+/, "")) {
+    if (typeof str !== "string" || !str.replace(/\s+/, "")) {
       throw new Error("Parameter missing or invalid");
     }
   }
