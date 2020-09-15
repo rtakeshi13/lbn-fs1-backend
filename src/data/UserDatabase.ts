@@ -78,12 +78,28 @@ export class UserDatabase extends BaseDatabase {
         "c.created_at"
       )
       .from({ c: UserDatabase.COLLECTION_TABLE_NAME })
-      .where({ user_id: user.id });
+      .where({ user_id: user.id })
+      .orderBy("created_at", "desc");
+
     user.collections = Collection.toColletionsDTO(collectionsFromDb);
 
     await UserDatabase.destroyConnection();
 
     return user;
+  }
+
+  async getCollectionByUserId(userId: string) {
+    const collections = await this.getConnection()
+      .select(
+        "c.id",
+        "c.name",
+        "c.description",
+        "c.thumbnail_url",
+        "c.created_at"
+      )
+      .from({ c: UserDatabase.COLLECTION_TABLE_NAME })
+      .where({ user_id: user.id })
+      .orderBy("created_at", "desc");
   }
 
   private async checkIfUserPairExistsById(
