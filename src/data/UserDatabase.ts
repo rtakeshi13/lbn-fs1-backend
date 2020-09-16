@@ -24,6 +24,7 @@ export class UserDatabase extends BaseDatabase {
           password: hashPassword,
         })
         .into(UserDatabase.USER_TABLE_NAME);
+      await BaseDatabase.destroyConnection();
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -35,6 +36,8 @@ export class UserDatabase extends BaseDatabase {
       .from(UserDatabase.USER_TABLE_NAME)
       .where({ email: input })
       .orWhere({ nickname: input });
+    await BaseDatabase.destroyConnection();
+
     if (!response[0]) throw new Error("UserDatabase:getUserByEmailOrNickname");
     return User.toUserModel(response[0]);
   }
@@ -83,7 +86,7 @@ export class UserDatabase extends BaseDatabase {
 
     user.collections = Collection.toColletionsDTO(collectionsFromDb);
 
-    await UserDatabase.destroyConnection();
+    await BaseDatabase.destroyConnection();
 
     return user;
   }
@@ -108,6 +111,8 @@ export class UserDatabase extends BaseDatabase {
       .from(UserDatabase.RELATION_TABLE_NAME)
       .where({ user_id: userId })
       .andWhere({ follow_id: followId });
+    await BaseDatabase.destroyConnection();
+
     return response[0].count === 1;
   }
 
@@ -119,6 +124,7 @@ export class UserDatabase extends BaseDatabase {
       await this.getConnection()
         .insert({ user_id: userId, follow_id: followId })
         .into(UserDatabase.RELATION_TABLE_NAME);
+      await BaseDatabase.destroyConnection();
     } catch (error) {
       if (error.code === "ER_DUP_ENTRY") {
         throw new Error("Already following this user");
@@ -136,5 +142,6 @@ export class UserDatabase extends BaseDatabase {
       .del()
       .from(UserDatabase.RELATION_TABLE_NAME)
       .where({ user_id: userId, follow_id: followId });
+    await BaseDatabase.destroyConnection();
   }
 }

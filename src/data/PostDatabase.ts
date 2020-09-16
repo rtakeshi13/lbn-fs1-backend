@@ -1,11 +1,7 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { Post, PostInputDTO, PostOutputDTO } from "../model/Post";
 import { DateFormatter } from "../services/DateFormatter";
-import {
-  CollectionInputDTO,
-  CollectionOutputDTO,
-  Collection,
-} from "../model/Collection";
+import { CollectionInputDTO } from "../model/Collection";
 
 export class PostDatabase extends BaseDatabase {
   private static POST_TABLE_NAME = "fs1_post";
@@ -84,6 +80,7 @@ export class PostDatabase extends BaseDatabase {
       await knex
         .insert(postCollectionInsertions)
         .into(PostDatabase.POST_COLLECTION_TABLE_NAME);
+      await BaseDatabase.destroyConnection();
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -101,6 +98,8 @@ export class PostDatabase extends BaseDatabase {
         .orderBy("created_at", "desc")
         .limit(PostDatabase.POST_LIMIT)
         .offset(PostDatabase.POST_LIMIT * page);
+      await BaseDatabase.destroyConnection();
+
       return response.map((item) => Post.toPostDTO(item));
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
@@ -123,6 +122,7 @@ export class PostDatabase extends BaseDatabase {
           user_id: userId,
         })
         .into(PostDatabase.COLLECTION_TABLE_NAME);
+      await BaseDatabase.destroyConnection();
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -140,7 +140,7 @@ export class PostDatabase extends BaseDatabase {
       label: item.name,
     }));
 
-    await PostDatabase.destroyConnection();
+    await BaseDatabase.destroyConnection();
 
     return collections;
   }
