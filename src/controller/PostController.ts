@@ -23,7 +23,7 @@ export class PostController {
 
       res.status(200).send({ sucess: true });
     } catch (error) {
-      res.status(400).send({ error });
+      res.status(400).send({ sucess: false, message: error.message });
     }
   }
 

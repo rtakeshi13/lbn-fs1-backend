@@ -142,6 +142,18 @@ export class UserDatabase extends BaseDatabase {
       .del()
       .from(UserDatabase.RELATION_TABLE_NAME)
       .where({ user_id: userId, follow_id: followId });
+
     await BaseDatabase.destroyConnection();
+  }
+
+  public async searchUsers(input: string): Promise<any[]> {
+    const response = await this.getConnection()
+      .select("nickname", "name")
+      .from(UserDatabase.USER_TABLE_NAME)
+      .where("nickname", "like", `%${input}%`)
+      .orWhere("name", "like", `%${input}%`);
+
+    await BaseDatabase.destroyConnection();
+    return response;
   }
 }
