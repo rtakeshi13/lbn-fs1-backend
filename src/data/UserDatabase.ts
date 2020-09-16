@@ -36,6 +36,7 @@ export class UserDatabase extends BaseDatabase {
       .from(UserDatabase.USER_TABLE_NAME)
       .where({ email: input })
       .orWhere({ nickname: input });
+
     await BaseDatabase.destroyConnection();
 
     if (!response[0]) throw new Error("UserDatabase:getUserByEmailOrNickname");
@@ -148,7 +149,7 @@ export class UserDatabase extends BaseDatabase {
 
   public async searchUsers(input: string): Promise<any[]> {
     const response = await this.getConnection()
-      .select("nickname", "name")
+      .select("id", "nickname", "name")
       .from(UserDatabase.USER_TABLE_NAME)
       .where("nickname", "like", `%${input}%`)
       .orWhere("name", "like", `%${input}%`);

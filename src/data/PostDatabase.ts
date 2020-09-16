@@ -33,7 +33,7 @@ export class PostDatabase extends BaseDatabase {
       const tagsFromClient = postData.caption
         .split(/\s+|\n+/)
         .filter(
-          (item, idx, arr) => arr.indexOf(item) === idx && item.match(/#\w+/)
+          (item, idx, arr) => item.match(/#\w+/) && arr.indexOf(item) === idx
         );
 
       /* Select existing tags */
@@ -97,6 +97,7 @@ export class PostDatabase extends BaseDatabase {
         .orderBy("created_at", "desc")
         .limit(PostDatabase.POST_LIMIT)
         .offset(PostDatabase.POST_LIMIT * page);
+
       await BaseDatabase.destroyConnection();
 
       return response.map((item) => Post.toPostDTO(item));
@@ -147,7 +148,7 @@ export class PostDatabase extends BaseDatabase {
   async searchTags(input: string): Promise<any[]> {
     const knex = this.getConnection();
     const tags = await knex.raw(`
-      SELECT t.tag, COUNT(1) as postsCount
+      SELECT t.tag, t.id, COUNT(1) as postsCount
       FROM fs1_tag t JOIN fs1_post_tag pt ON t.id = pt.tag_id
       WHERE t.tag LIKE '%${input.replace("#", "")}%'
       GROUP BY t.id

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { AddressInfo, connect } from "net";
+import { AddressInfo } from "net";
 import express from "express";
 import cors from "cors";
 import { userRouter } from "./routes/userRouter";
@@ -15,11 +15,6 @@ app.use(cors());
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 app.use("/search", seachRouter);
-
-const client = connect({ port: 80, host: "google.com" }, () => {
-  console.log("MyIP=" + client.localAddress);
-  console.log("MyPORT=" + client.localPort);
-});
 
 const server = app.listen(Number(process.env.PORT) || 3003, () => {
   if (server) {
