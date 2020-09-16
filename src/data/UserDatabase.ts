@@ -100,6 +100,9 @@ export class UserDatabase extends BaseDatabase {
       .count("id AS count")
       .from(UserDatabase.USER_TABLE_NAME)
       .whereIn("id", [userId, followId]);
+
+    await BaseDatabase.destroyConnection();
+
     return response[0].count === 2;
   }
 
@@ -112,6 +115,7 @@ export class UserDatabase extends BaseDatabase {
       .from(UserDatabase.RELATION_TABLE_NAME)
       .where({ user_id: userId })
       .andWhere({ follow_id: followId });
+
     await BaseDatabase.destroyConnection();
 
     return response[0].count === 1;
@@ -125,6 +129,7 @@ export class UserDatabase extends BaseDatabase {
       await this.getConnection()
         .insert({ user_id: userId, follow_id: followId })
         .into(UserDatabase.RELATION_TABLE_NAME);
+
       await BaseDatabase.destroyConnection();
     } catch (error) {
       if (error.code === "ER_DUP_ENTRY") {
@@ -155,6 +160,7 @@ export class UserDatabase extends BaseDatabase {
       .orWhere("name", "like", `%${input}%`);
 
     await BaseDatabase.destroyConnection();
+
     return response;
   }
 }

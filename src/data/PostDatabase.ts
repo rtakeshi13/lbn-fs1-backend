@@ -79,6 +79,7 @@ export class PostDatabase extends BaseDatabase {
       await knex
         .insert(postCollectionInsertions)
         .into(PostDatabase.POST_COLLECTION_TABLE_NAME);
+
       await BaseDatabase.destroyConnection();
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
@@ -122,6 +123,7 @@ export class PostDatabase extends BaseDatabase {
           user_id: userId,
         })
         .into(PostDatabase.COLLECTION_TABLE_NAME);
+
       await BaseDatabase.destroyConnection();
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
@@ -152,7 +154,9 @@ export class PostDatabase extends BaseDatabase {
       FROM fs1_tag t JOIN fs1_post_tag pt ON t.id = pt.tag_id
       WHERE t.tag LIKE '%${input.replace("#", "")}%'
       GROUP BY t.id
+      ORDER BY postsCount DESC
     `);
+
     await BaseDatabase.destroyConnection();
 
     //   .select("t.tag", "count(t.id)")
