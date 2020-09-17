@@ -34,9 +34,30 @@ export class PostController {
         new IdGenerator(),
         new PostDatabase()
       );
-      const userId = req.query.userId as string;
+
       const posts = await postBusiness.getPostsByUserId(
-        userId,
+        req.headers.authorization as string,
+        req.query.userId as string,
+        Number(req.query.page)
+      );
+
+      res.status(200).send({ sucess: true, posts });
+    } catch (error) {
+      res.status(400).send({ sucess: false, message: error.message });
+    }
+  }
+
+  async getPostsByTag(req: Request, res: Response) {
+    try {
+      const postBusiness = new PostBusiness(
+        new Authenticator(),
+        new IdGenerator(),
+        new PostDatabase()
+      );
+
+      const posts = await postBusiness.getPostsByTag(
+        req.headers.authorization as string,
+        req.query.tag as string,
         Number(req.query.page)
       );
 

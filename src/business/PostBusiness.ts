@@ -21,9 +21,12 @@ export class PostBusiness {
   }
 
   async getPostsByUserId(
+    token: string,
     userId: string,
     page: number
   ): Promise<PostOutputDTO[]> {
+    this.authenticator.getData(token);
+
     return this.postDatabase.getPostsByUserId(userId, page);
   }
 
@@ -44,5 +47,12 @@ export class PostBusiness {
   async getCollectionsByUserId(token: string) {
     const userId = this.authenticator.getData(token).id;
     return this.postDatabase.getCollectionByUserId(userId);
+  }
+
+  async getPostsByTag(token: string, tag: string, page: number) {
+    Validator.validateString(tag);
+    this.authenticator.getData(token);
+
+    return this.postDatabase.getPostsByTag(tag, page);
   }
 }

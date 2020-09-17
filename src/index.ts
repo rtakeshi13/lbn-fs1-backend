@@ -5,6 +5,7 @@ import cors from "cors";
 import { userRouter } from "./routes/userRouter";
 import { postRouter } from "./routes/postRouter";
 import { seachRouter } from "./routes/searchRouter";
+import { PostDatabase } from "./data/PostDatabase";
 
 dotenv.config();
 const app = express();

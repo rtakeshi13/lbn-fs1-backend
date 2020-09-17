@@ -107,6 +107,22 @@ export class PostDatabase extends BaseDatabase {
     }
   }
 
+  public async getPostsByTag(tag: string, page: number): Promise<any[]> {
+    const response = await this.getConnection()
+      .select("p.id", "p.user_id", "p.media_url", "p.caption", "p.created_at")
+      .from({ p: PostDatabase.POST_TABLE_NAME })
+      .join({ pt: PostDatabase.POST_TAG_TABLE_NAME }, { "p.id": "pt.post_id" })
+      .join({ t: PostDatabase.TAG_TABLE_NAME }, { "t.id": "pt.tag_id" })
+      .where({ "t.tag": tag })
+      .orderBy("p.created_at", "desc")
+      .limit(PostDatabase.POST_LIMIT)
+      .offset(PostDatabase.POST_LIMIT * page);
+
+    await BaseDatabase.destroyConnection();
+
+    return response.map((item) => Post.toPostDTO(item));
+  }
+
   public async createCollection(
     collectionId: string,
     userId: string,
