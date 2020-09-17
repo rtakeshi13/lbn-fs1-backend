@@ -67,6 +67,25 @@ export class PostController {
     }
   }
 
+  async getFeed(req: Request, res: Response) {
+    try {
+      const postBusiness = new PostBusiness(
+        new Authenticator(),
+        new IdGenerator(),
+        new PostDatabase()
+      );
+
+      const posts = await postBusiness.getFeed(
+        req.headers.authorization as string,
+        Number(req.query.page)
+      );
+
+      res.status(200).send({ sucess: true, posts });
+    } catch (error) {
+      res.status(400).send({ sucess: false, message: error.message });
+    }
+  }
+
   async createColletion(req: Request, res: Response) {
     try {
       const postBusiness = new PostBusiness(

@@ -8,5 +8,6 @@ const postController = new PostController();
 postRouter.post("/create", postController.createPost);
 postRouter.get("/", postController.getPostsByUserId);
 postRouter.get("/tag", postController.getPostsByTag);
+postRouter.get("/feed", postController.getFeed);
 postRouter.put("/collection", postController.createColletion);
 postRouter.get("/collection", postController.getCollectionsByUserId);

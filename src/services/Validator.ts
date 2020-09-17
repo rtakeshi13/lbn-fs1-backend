@@ -38,4 +38,10 @@ export abstract class Validator {
       throw new Error("Parameter missing or invalid");
     }
   }
+
+  static validateNatural(num: any): void {
+    if (!Number.isInteger(num) || num < 0) {
+      throw new Error("Parameter missing or invalid");
+    }
+  }
 }

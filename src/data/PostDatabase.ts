@@ -10,6 +10,8 @@ export class PostDatabase extends BaseDatabase {
   private static POST_TAG_TABLE_NAME = "fs1_post_tag";
   private static COLLECTION_TABLE_NAME = "fs1_collection";
   private static POST_COLLECTION_TABLE_NAME = "fs1_post_collection";
+  private static USER_TABLE_NAME = "fs1_user";
+  private static RELATION_TABLE_NAME = "fs1_user_relation";
 
   public async createPost(
     postId: string,
@@ -92,8 +94,17 @@ export class PostDatabase extends BaseDatabase {
   ): Promise<PostOutputDTO[]> {
     try {
       const response = await this.getConnection()
-        .select()
-        .from(PostDatabase.POST_TABLE_NAME)
+        .select(
+          "p.id",
+          "p.caption",
+          "p.user_id",
+          "p.created_at",
+          "p.media_url",
+          "u.nickname",
+          "u.name"
+        )
+        .from({ p: PostDatabase.POST_TABLE_NAME })
+        .join({ u: PostDatabase.USER_TABLE_NAME }, { user_id: "u.id" })
         .where({ user_id: userId })
         .orderBy("created_at", "desc")
         .limit(PostDatabase.POST_LIMIT)
@@ -107,12 +118,24 @@ export class PostDatabase extends BaseDatabase {
     }
   }
 
-  public async getPostsByTag(tag: string, page: number): Promise<any[]> {
+  public async getPostsByTag(
+    tag: string,
+    page: number
+  ): Promise<PostOutputDTO[]> {
     const response = await this.getConnection()
-      .select("p.id", "p.user_id", "p.media_url", "p.caption", "p.created_at")
-      .from({ p: PostDatabase.POST_TABLE_NAME })
-      .join({ pt: PostDatabase.POST_TAG_TABLE_NAME }, { "p.id": "pt.post_id" })
-      .join({ t: PostDatabase.TAG_TABLE_NAME }, { "t.id": "pt.tag_id" })
+      .select(
+        "p.id",
+        "p.user_id",
+        "p.media_url",
+        "p.caption",
+        "p.created_at",
+        "u.nickname",
+        "u.name"
+      )
+      .from({ t: PostDatabase.TAG_TABLE_NAME })
+      .join({ pt: PostDatabase.POST_TAG_TABLE_NAME }, { "t.id": "pt.tag_id" })
+      .join({ p: PostDatabase.POST_TABLE_NAME }, { "pt.post_id": "p.id" })
+      .join({ u: PostDatabase.USER_TABLE_NAME }, { "p.user_id": "u.id" })
       .where({ "t.tag": tag })
       .orderBy("p.created_at", "desc")
       .limit(PostDatabase.POST_LIMIT)
@@ -181,5 +204,28 @@ export class PostDatabase extends BaseDatabase {
     //   .where("t.tag", "like", `%${input}%`)
     //   .groupBy("t.id");
     return tags[0];
+  }
+
+  async getFeed(userId: string, page: number): Promise<any[]> {
+    const response = await this.getConnection()
+      .select(
+        "p.id",
+        "p.user_id",
+        "p.media_url",
+        "p.caption",
+        "p.created_at",
+        "u.nickname",
+        "u.name"
+      )
+      .from({ r: PostDatabase.RELATION_TABLE_NAME })
+      .join({ u: PostDatabase.USER_TABLE_NAME }, { "r.follow_id": "u.id" })
+      .join({ p: PostDatabase.POST_TABLE_NAME }, { "u.id": "p.user_id" })
+      .where({ "r.user_id": userId })
+      .orderBy("p.created_at", "desc")
+      .limit(PostDatabase.POST_LIMIT)
+      .offset(PostDatabase.POST_LIMIT * page);
+    await BaseDatabase.destroyConnection();
+
+    return response.map((item) => Post.toPostDTO(item));
   }
 }

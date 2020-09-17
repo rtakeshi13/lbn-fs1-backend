@@ -66,6 +66,8 @@ export class Post {
       mediaUrl: post.media_url,
       caption: post.caption,
       createdAt: DateFormatter.mySqlDatetimeToMilliseconds(post.created_at),
+      userNickname: post.nickname,
+      userName: post.name,
     };
   }
 }
@@ -84,4 +86,6 @@ export interface PostOutputDTO {
   mediaUrl: string;
   caption: string;
   createdAt: number;
+  userNickname: string;
+  userName: string;
 }
