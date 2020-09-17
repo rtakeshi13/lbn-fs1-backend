@@ -47,7 +47,7 @@ export class PostBusiness {
 
   async getCollectionsByUserId(token: string) {
     const userId = this.authenticator.getData(token).id;
-    return this.postDatabase.getCollectionByUserId(userId);
+    return this.postDatabase.getCollectionsByUserId(userId);
   }
 
   async getPostsByTag(token: string, tag: string, page: number) {

@@ -101,7 +101,8 @@ export class PostDatabase extends BaseDatabase {
           "p.created_at",
           "p.media_url",
           "u.nickname",
-          "u.name"
+          "u.name",
+          "u.avatar_url"
         )
         .from({ p: PostDatabase.POST_TABLE_NAME })
         .join({ u: PostDatabase.USER_TABLE_NAME }, { user_id: "u.id" })
@@ -130,7 +131,8 @@ export class PostDatabase extends BaseDatabase {
         "p.caption",
         "p.created_at",
         "u.nickname",
-        "u.name"
+        "u.name",
+        "u.avatar_url"
       )
       .from({ t: PostDatabase.TAG_TABLE_NAME })
       .join({ pt: PostDatabase.POST_TAG_TABLE_NAME }, { "t.id": "pt.tag_id" })
@@ -169,7 +171,7 @@ export class PostDatabase extends BaseDatabase {
     }
   }
 
-  async getCollectionByUserId(userId: string): Promise<any[]> {
+  async getCollectionsByUserId(userId: string): Promise<any[]> {
     const collectionsFromDb = await this.getConnection()
       .select("c.id", "c.name")
       .from({ c: PostDatabase.COLLECTION_TABLE_NAME })
@@ -215,7 +217,8 @@ export class PostDatabase extends BaseDatabase {
         "p.caption",
         "p.created_at",
         "u.nickname",
-        "u.name"
+        "u.name",
+        "u.avatar_url"
       )
       .from({ r: PostDatabase.RELATION_TABLE_NAME })
       .join({ u: PostDatabase.USER_TABLE_NAME }, { "r.follow_id": "u.id" })

@@ -89,6 +89,7 @@ export class User {
       followersCount: user.followersCount,
       followingCount: user.followingCount,
       collections: [],
+      avatarUrl: user.avatar_url,
     };
   }
 }
@@ -117,6 +118,7 @@ export interface UserOutputDTO {
   followersCount: number;
   followingCount: number;
   collections: CollectionOutputDTO[];
+  avatarUrl: string;
 }
 
 export enum UserRole {

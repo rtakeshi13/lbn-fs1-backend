@@ -22,6 +22,7 @@ export class UserDatabase extends BaseDatabase {
           nickname: signupData.nickname,
           email: signupData.email,
           password: hashPassword,
+          avatar_url: null,
         })
         .into(UserDatabase.USER_TABLE_NAME);
       await BaseDatabase.destroyConnection();
@@ -51,6 +52,7 @@ export class UserDatabase extends BaseDatabase {
         "u.id",
         "u.name",
         "u.nickname",
+        "u.avatar_url",
         knex
           .count("id")
           .from(UserDatabase.POST_TABLE_NAME)

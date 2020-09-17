@@ -68,6 +68,7 @@ export class Post {
       createdAt: DateFormatter.mySqlDatetimeToMilliseconds(post.created_at),
       userNickname: post.nickname,
       userName: post.name,
+      avatarUrl: post.avatar_url,
     };
   }
 }
@@ -88,4 +89,5 @@ export interface PostOutputDTO {
   createdAt: number;
   userNickname: string;
   userName: string;
+  avatarUrl: string;
 }
