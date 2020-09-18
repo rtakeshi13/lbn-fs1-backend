@@ -18,9 +18,9 @@ export class UserDatabase extends BaseDatabase {
       await this.getConnection()
         .insert({
           id,
-          name: signupData.name,
-          nickname: signupData.nickname,
-          email: signupData.email,
+          name: signupData.name.trim(),
+          nickname: signupData.nickname.trim(),
+          email: signupData.email.trim(),
           password: hashPassword,
           avatar_url: null,
         })
@@ -158,8 +158,9 @@ export class UserDatabase extends BaseDatabase {
     const response = await this.getConnection()
       .select("id", "nickname", "name")
       .from(UserDatabase.USER_TABLE_NAME)
-      .where("nickname", "like", `%${input}%`)
-      .orWhere("name", "like", `%${input}%`);
+      .where("nickname", "like", `%${input.trim()}%`)
+      .orWhere("name", "like", `%${input.trim()}%`)
+      .orderByRaw(`LENGTH(nickname) ASC`);
 
     await BaseDatabase.destroyConnection();
 

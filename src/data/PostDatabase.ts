@@ -27,24 +27,25 @@ export class PostDatabase extends BaseDatabase {
           id: postId,
           user_id: userId,
           media_url: postData.mediaUrl,
-          caption: postData.caption,
+          caption: postData.caption.trim(),
           created_at: DateFormatter.currentTimeToMySqlDatetime(),
         })
         .into(PostDatabase.POST_TABLE_NAME);
 
+      /* Parses tags from caption */
       const tagsFromClient = postData.caption
         .split(/\s+|\n+/)
         .filter(
           (item, idx, arr) => item.match(/#\w+/) && arr.indexOf(item) === idx
         );
 
-      /* Select existing tags */
+      /* Selects existing tags */
       const tagsFromDb = await knex
         .select()
         .from(PostDatabase.TAG_TABLE_NAME)
         .whereIn("tag", tagsFromClient);
 
-      /* Insert tags that are not present in table */
+      /* Inserts tags that are not present in table */
       const tagNamesFromDb = tagsFromDb.map((item) => item.tag);
       const tagsNotInDb = tagsFromClient.filter(
         (item, idx, arr) =>
@@ -58,7 +59,7 @@ export class PostDatabase extends BaseDatabase {
         )
       ).map((item) => item[0]);
 
-      /* Create objects for insertion in post-tag relation table */
+      /* Creates objects for insertion in post-tag relation table */
       const allTagsIds = tagsFromDb
         .map((dbItem) => dbItem.id)
         .concat(newTagsIds);
@@ -157,8 +158,8 @@ export class PostDatabase extends BaseDatabase {
       await this.getConnection()
         .insert({
           id: collectionId,
-          name: collectionData.name,
-          description: collectionData.description,
+          name: collectionData.name.trim(),
+          description: collectionData.description.trim(),
           thumbnail_url: collectionData.thumbnailUrl,
           created_at: DateFormatter.currentTimeToMySqlDatetime(),
           user_id: userId,
@@ -193,18 +194,13 @@ export class PostDatabase extends BaseDatabase {
     const tags = await knex.raw(`
       SELECT t.tag, t.id, COUNT(1) as postsCount
       FROM fs1_tag t JOIN fs1_post_tag pt ON t.id = pt.tag_id
-      WHERE t.tag LIKE '%${input.replace("#", "")}%'
+      WHERE t.tag LIKE '%${input.trim()}%'
       GROUP BY t.id
-      ORDER BY postsCount DESC
+      ORDER BY LENGTH(t.tag) ASC
     `);
 
     await BaseDatabase.destroyConnection();
 
-    //   .select("t.tag", "count(t.id)")
-    //   .from({ t: PostDatabase.TAG_TABLE_NAME })
-    //   .join({ pt: PostDatabase.POST_TAG_TABLE_NAME }, { "t.id": "pt.tag_id" })
-    //   .where("t.tag", "like", `%${input}%`)
-    //   .groupBy("t.id");
     return tags[0];
   }
 
